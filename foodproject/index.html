@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Analyzer - Understand food, instantly</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f7f3;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 80px;
+            background: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+            padding: 20px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .sidebar-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-icon:hover {
+            background: rgba(255, 255, 255, 0.8);
+            transform: translateY(-2px);
+        }
+
+        .sidebar-icon.active {
+            background: linear-gradient(135deg, #6b8e4e 0%, #7fa05a 100%);
+            color: white;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 30px 40px;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 50px;
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(10px);
+            padding: 15px 30px;
+            border-radius: 20px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2d3e1f;
+            letter-spacing: 2px;
+        }
+
+        .header-search {
+            flex: 1;
+            max-width: 400px;
+            margin: 0 40px;
+            position: relative;
+        }
+
+        .header-search input {
+            width: 100%;
+            padding: 12px 45px 12px 20px;
+            border: none;
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+            outline: none;
+        }
+
+        .header-search::after {
+            content: '🔍';
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .menu-icon {
+            cursor: pointer;
+            font-size: 24px;
+        }
+
+        .profile-pic {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #e8b4a8 0%, #d8a498 100%);
+            border: 3px solid white;
+            cursor: pointer;
+        }
+
+        /* Hero Section */
+        .hero {
+            margin-bottom: 40px;
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            color: #2d3e1f;
+            margin-bottom: 30px;
+            font-weight: 700;
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background: white;
+            padding: 15px 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            max-width: 400px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-bar::before {
+            content: '🔍';
+            margin-right: 15px;
+            font-size: 18px;
+        }
+
+        .search-bar input {
+            border: none;
+            outline: none;
+            flex: 1;
+            font-size: 15px;
+            color: #666;
+        }
+
+        .search-icons {
+            display: flex;
+            gap: 15px;
+            margin-left: 15px;
+        }
+
+        .search-icon {
+            cursor: pointer;
+            font-size: 18px;
+            opacity: 0.6;
+            transition: opacity 0.3s;
+        }
+
+        .search-icon:hover {
+            opacity: 1;
+        }
+
+        /* Upload Card and Food Image Container */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        .upload-card {
+            background: white;
+            padding: 40px;
+            border-radius: 25px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .upload-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #7fa05a 0%, #6b8e4e 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        .upload-text {
+            font-size: 22px;
+            color: #2d3e1f;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .upload-subtext {
+            color: #888;
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+
+        .analyze-button {
+            background: linear-gradient(135deg, #7fa05a 0%, #6b8e4e 100%);
+            color: white;
+            border: none;
+            padding: 18px 50px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .analyze-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(107, 142, 78, 0.4);
+        }
+
+        .analyze-button::before {
+            content: '▼';
+            font-size: 12px;
+        }
+
+        .food-image-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .food-plate {
+            width: 100%;
+            max-width: 450px;
+            height: 450px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .food-image {
+            width: 90%;
+            height: 90%;
+            border-radius: 50%;
+            object-fit: cover;
+            background: linear-gradient(135deg, #f5d68f 0%, #f5a068 50%, #e8905f 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .food-image::before {
+            content: '🍝';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 180px;
+            opacity: 0.9;
+        }
+
+        .decoration {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background: rgba(139, 195, 74, 0.3);
+            border-radius: 50%;
+            filter: blur(15px);
+        }
+
+        .decoration.top {
+            top: -20px;
+            left: 20%;
+        }
+
+        .decoration.bottom {
+            bottom: 10px;
+            right: 15%;
+        }
+
+        /* Analysis Section */
+        .analysis-section {
+            margin-top: 50px;
+        }
+
+        .section-title {
+            font-size: 28px;
+            color: #2d3e1f;
+            font-weight: 700;
+            margin-bottom: 30px;
+        }
+
+        .analysis-card {
+            background: white;
+            padding: 30px;
+            border-radius: 25px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .food-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 25px;
+        }
+
+        .food-info {
+            flex: 1;
+        }
+
+        .food-name {
+            font-size: 24px;
+            color: #2d3e1f;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .food-emoji {
+            font-size: 28px;
+        }
+
+        .food-weight {
+            color: #888;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+
+        .food-images {
+            display: flex;
+            gap: 15px;
+        }
+
+        .food-thumb {
+            width: 80px;
+            height: 80px;
+            border-radius: 15px;
+            background: linear-gradient(135deg, #d4a574 0%, #7fa05a 50%, #6b8e4e 100%);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .progress-bars {
+            margin-bottom: 20px;
+        }
+
+        .progress-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            gap: 15px;
+        }
+
+        .progress-icon {
+            font-size: 20px;
+        }
+
+        .progress-bar {
+            flex: 1;
+            height: 8px;
+            background: #f0f0f0;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        .progress-fill.green {
+            background: linear-gradient(90deg, #8bc34a 0%, #7fa05a 100%);
+        }
+
+        .progress-fill.yellow {
+            background: linear-gradient(90deg, #ffc107 0%, #ffb300 100%);
+        }
+
+        .progress-label {
+            font-size: 14px;
+            color: #666;
+            min-width: 80px;
+        }
+
+        .progress-value {
+            font-weight: 600;
+            color: #2d3e1f;
+            min-width: 60px;
+            text-align: right;
+        }
+
+        .ingredients-list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .ingredient-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: #f9f9f9;
+            border-radius: 12px;
+        }
+
+        .ingredient-icon {
+            font-size: 22px;
+        }
+
+        .ingredient-name {
+            flex: 1;
+            font-weight: 500;
+            color: #2d3e1f;
+        }
+
+        .ingredient-amount {
+            color: #888;
+            font-size: 14px;
+        }
+
+        .nutrition-stats {
+            display: flex;
+            gap: 30px;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 15px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #2d3e1f;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: #888;
+            text-transform: capitalize;
+        }
+
+        .warning-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #fff3cd;
+            color: #856404;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .risk-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        @media (max-width: 1024px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .ingredients-list {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 60px;
+            }
+
+            .main-content {
+                padding: 20px;
+            }
+
+            .hero h1 {
+                font-size: 32px;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .header-search {
+                max-width: 100%;
+                margin: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-icon active">🏠</div>
+            <div class="sidebar-icon">✏️</div>
+            <div class="sidebar-icon">🕐</div>
+            <div class="sidebar-icon">💬</div>
+            <div class="sidebar-icon">☁️</div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <div class="header">
+                <div class="logo">NAME</div>
+                <div class="header-search">
+                    <input type="text" placeholder="Analyze your meal ...">
+                </div>
+                <div class="header-right">
+                    <div class="menu-icon">☰</div>
+                    <div class="profile-pic"></div>
+                </div>
+            </div>
+
+            <!-- Hero Section -->
+            <div class="hero">
+                <h1>Understand food, instantly.</h1>
+                
+                <div class="search-bar">
+                    <input type="text" placeholder="Analyze your meal">
+                    <div class="search-icons">
+                        <span class="search-icon">📷</span>
+                        <span class="search-icon">⋯</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Upload and Food Image -->
+            <div class="content-grid">
+                <div class="upload-card">
+                    <div class="upload-icon">📷</div>
+                    <div class="upload-text">Upload food label /</div>
+                    <div class="upload-subtext">image / text</div>
+                    <input type="file" id="foodImageInput" accept="image/*" style="display: none;">
+                    <button class="analyze-button" onclick="document.getElementById('foodImageInput').click()">Analyze Food</button>
+                </div>
+
+                <div class="food-image-container">
+                    <div class="decoration top"></div>
+                    <div class="food-plate">
+                        <div class="food-image" id="foodPreview"></div>
+                    </div>
+                    <div class="decoration bottom"></div>
+                </div>
+            </div>
+
+            <!-- Analysis Section -->
+            <div class="analysis-section">
+                <h2 class="section-title">What should I know?</h2>
+                
+                <div class="analysis-card">
+                    <div class="food-header">
+                        <div class="food-info">
+                            <div class="food-name">
+                                <span class="food-emoji">🍗</span>
+                                Fried Chicken
+                            </div>
+                            <div class="food-weight">350 g</div>
+                            
+                            <div class="progress-bars">
+                                <div class="progress-item">
+                                    <span class="progress-icon">🟢</span>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill green" style="width: 85%;"></div>
+                                    </div>
+                                    <span class="progress-value">8.5</span>
+                                </div>
+                                <div class="progress-item">
+                                    <span class="progress-icon">🟡</span>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill yellow" style="width: 75%;"></div>
+                                    </div>
+                                    <span class="progress-value">7.5%</span>
+                                </div>
+                            </div>
+
+                            <div class="progress-label" style="margin-bottom: 15px;">
+                                <span class="risk-indicator">⚠️ Caloriae, Addeal</span>
+                                <span style="margin-left: 20px;">📊 551g</span>
+                            </div>
+                        </div>
+
+                        <div class="food-images">
+                            <div class="food-thumb" style="background: linear-gradient(135deg, #d4a574 0%, #c49565 100%);"></div>
+                            <div class="food-thumb" style="background: linear-gradient(135deg, #e8d4a8 0%, #d8c498 100%);"></div>
+                            <div class="food-thumb" style="background: linear-gradient(135deg, #7fa05a 0%, #6b8e4e 100%);"></div>
+                        </div>
+                    </div>
+
+                    <div class="ingredients-list">
+                        <div class="ingredient-item">
+                            <span class="ingredient-icon">🍅</span>
+                            <span class="ingredient-name">Tomatoes</span>
+                            <span class="ingredient-amount">128 g</span>
+                        </div>
+                        <div class="ingredient-item">
+                            <span class="ingredient-icon">⚠️</span>
+                            <span class="ingredient-name">Other Ingredie</span>
+                            <span class="ingredient-amount">115%</span>
+                        </div>
+                        <div class="ingredient-item">
+                            <span class="ingredient-icon">🍬</span>
+                            <span class="ingredient-name">Added Sugar</span>
+                            <span class="ingredient-amount">6.48 g</span>
+                        </div>
+                        <div class="ingredient-item">
+                            <span class="ingredient-icon">🧄</span>
+                            <span class="ingredient-name">Garlic</span>
+                            <span class="ingredient-amount">0.408 g</span>
+                        </div>
+                        <div class="ingredient-item">
+                            <span class="ingredient-icon">🧂</span>
+                            <span class="ingredient-name">Salt</span>
+                            <span class="ingredient-amount">0.22 g</span>
+                        </div>
+                        <div class="ingredient-item">
+                            <span class="ingredient-icon">📦</span>
+                            <span class="ingredient-name">Other ingredients</span>
+                            <span class="ingredient-amount">486 g</span>
+                        </div>
+                    </div>
+
+                    <div class="nutrition-stats">
+                        <div class="stat">
+                            <div class="stat-value">6.3%</div>
+                            <div class="stat-label">Carbs</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">41.5%</div>
+                            <div class="stat-label">Fats</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">2.7%</div>
+                            <div class="stat-label">Sugar</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detailed Analysis Results Section (Initially Hidden) -->
+            <div class="detailed-results" id="detailedResults" style="display: none; margin-top: 60px;">
+                <h2 class="section-title" style="margin-bottom: 30px;">Detailed Analysis</h2>
+                
+                <div style="background: rgba(255,255,255,0.9); border-radius: 20px; padding: 40px; margin-bottom: 40px;">
+                    <div class="result-header" style="margin-bottom: 30px;">
+                        <h1 id="resultProductName" style="font-size: 42px; color: #2d3e1f; font-weight: 700; margin-bottom: 10px;">Product Name</h1>
+                        <div id="resultDescription" style="font-size: 16px; color: #666; line-height: 1.6; margin-bottom: 15px; padding: 15px; background: #f8f9fa; border-radius: 10px; border-left: 4px solid #4a5f3a;"></div>
+                        <div id="resultWeight" style="color: #888; font-size: 18px; margin-bottom: 20px;">Weight</div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 60px;">
+                        <!-- Nutrition Section -->
+                        <div>
+                            <div id="resultNutritionTable" style="margin-bottom: 30px;"></div>
+                            
+                            <div style="margin-top: 30px;">
+                                <h3 style="font-size: 20px; font-weight: 600; color: #2d3e1f; margin-bottom: 20px;">Ingredients</h3>
+                                <div id="resultIngredients"></div>
+                            </div>
+                        </div>
+
+                        <!-- Pie Chart Section -->
+                        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                            <div style="position: relative; width: 300px; height: 300px; margin-bottom: 30px;">
+                                <canvas id="nutritionChart" width="300" height="300"></canvas>
+                                <div id="chartCenterImage" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 120px; height: 120px; border-radius: 50%; background-size: cover; background-position: center; box-shadow: 0 4px 12px rgba(0,0,0,0.15);"></div>
+                            </div>
+                            <div id="chartLegend" style="display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; max-width: 350px;"></div>
+                        </div>
+                    </div>
+
+                    <div id="healthRating" style="margin-top: 30px; padding: 20px; border-radius: 12px; background: #f8f9fa;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        // Image upload and preview with backend integration
+        const fileInput = document.getElementById('foodImageInput');
+        const foodPreview = document.getElementById('foodPreview');
+        let uploadedImage = null;
+        let uploadedFile = null;
+
+        fileInput.addEventListener('change', async function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                uploadedFile = file;
+                
+                // Show preview
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    uploadedImage = event.target.result;
+                    foodPreview.style.backgroundImage = `url('${uploadedImage}')`;
+                    foodPreview.style.backgroundSize = 'cover';
+                    foodPreview.style.backgroundPosition = 'center';
+                    
+                    // Update analyze button
+                    const analyzeBtn = document.querySelector('.analyze-button');
+                    analyzeBtn.textContent = 'Analyzing...';
+                    analyzeBtn.style.background = 'linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%)';
+                };
+                reader.readAsDataURL(file);
+                
+                // Call backend API for analysis
+                try {
+                    const foodData = await analyzeFood(file);
+                    
+                    // Store the uploaded image
+                    localStorage.setItem('uploadedImage', uploadedImage);
+                    
+                    // Update both sections with real data
+                    updateAnalysisSection(foodData);
+                    updateDetailedResults(foodData, uploadedImage);
+                    
+                    // Show detailed results and scroll to it
+                    document.getElementById('detailedResults').style.display = 'block';
+                    setTimeout(() => {
+                        document.getElementById('detailedResults').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }, 300);
+                    
+                    // Reset button
+                    const analyzeBtn = document.querySelector('.analyze-button');
+                    analyzeBtn.textContent = 'Analyze Food';
+                    analyzeBtn.style.background = 'linear-gradient(135deg, #7fa05a 0%, #6b8e4e 100%)';
+                    
+                } catch (error) {
+                    console.error('Analysis error:', error);
+                    const analyzeBtn = document.querySelector('.analyze-button');
+                    analyzeBtn.textContent = 'Analysis Failed - Try Again';
+                    analyzeBtn.style.background = 'linear-gradient(135deg, #666 0%, #555 100%)';
+                }
+            }
+        });
+
+        // Sidebar navigation
+        document.querySelectorAll('.sidebar-icon').forEach(icon => {
+            icon.addEventListener('click', function() {
+                document.querySelectorAll('.sidebar-icon').forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // Search functionality
+        const searchInputs = document.querySelectorAll('input:not(#foodImageInput)');
+        searchInputs.forEach(input => {
+            input.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && this.value.trim()) {
+                    // Could add search functionality here
+                    console.log('Search:', this.value);
+                }
+            });
+        });
+
+        // Click on food items in analysis section to scroll to details
+        document.addEventListener('DOMContentLoaded', function() {
+            const analysisCard = document.querySelector('.analysis-card');
+            if (analysisCard) {
+                analysisCard.style.cursor = 'pointer';
+                analysisCard.addEventListener('click', function() {
+                    const detailedResults = document.getElementById('detailedResults');
+                    if (detailedResults.style.display !== 'none') {
+                        detailedResults.scrollIntoView({ behavior: 'smooth' });
+                    }
+                });
+            }
+        });
+
+        // Function to update analysis section with real data
+        function updateAnalysisSection(foodData) {
+            // Update food name and emoji
+            const foodNameElement = document.querySelector('.food-name');
+            if (foodNameElement) {
+                foodNameElement.innerHTML = `<span class="food-emoji">${foodData.emoji || '🍽️'}</span> ${foodData.name || 'Unknown Product'}`;
+            }
+
+            // Update food weight
+            const foodWeightElement = document.querySelector('.food-weight');
+            if (foodWeightElement) {
+                foodWeightElement.textContent = foodData.weight || 'N/A';
+            }
+
+            // Update ingredients
+            const ingredientsContainer = document.querySelector('.ingredients-list');
+            if (ingredientsContainer && foodData.ingredients) {
+                ingredientsContainer.innerHTML = foodData.ingredients.map(ing => `
+                    <div class="ingredient-item">
+                        <span class="ingredient-icon">${ing.icon || '📦'}</span>
+                        <span class="ingredient-name">${ing.name || 'Unknown'}</span>
+                        <span class="ingredient-amount">${ing.amount || 'N/A'}</span>
+                    </div>
+                `).join('');
+            }
+
+            // Update nutrition stats
+            const nutritionStats = document.querySelector('.nutrition-stats');
+            if (nutritionStats && foodData.nutrition) {
+                nutritionStats.innerHTML = `
+                    <div class="stat">
+                        <div class="stat-value">${formatNutrition(foodData.nutrition.carbs)}%</div>
+                        <div class="stat-label">Carbs</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">${formatNutrition(foodData.nutrition.fats)}%</div>
+                        <div class="stat-label">Fats</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">${formatNutrition(foodData.nutrition.sugar)}%</div>
+                        <div class="stat-label">Sugar</div>
+                    </div>
+                `;
+            }
+
+            // Add description if available
+            let descriptionElement = document.querySelector('.food-description');
+            if (!descriptionElement) {
+                // Add description below the analysis card
+                const analysisCard = document.querySelector('.analysis-card');
+                descriptionElement = document.createElement('div');
+                descriptionElement.className = 'food-description';
+                descriptionElement.style.cssText = 'margin-top: 20px; padding: 20px; background: rgba(255,255,255,0.8); border-radius: 12px; font-size: 16px; line-height: 1.6;';
+                analysisCard.parentNode.insertBefore(descriptionElement, analysisCard.nextSibling);
+            }
+            if (foodData.description) {
+                descriptionElement.innerHTML = foodData.description;
+                descriptionElement.style.display = 'block';
+            } else {
+                descriptionElement.style.display = 'none';
+            }
+        }
+
+        // Format nutrition helper
+        function formatNutrition(value) {
+            return typeof value === 'number' ? value.toFixed(1) : value;
+        }
+
+        // Function to update detailed results section
+        function updateDetailedResults(foodData, image) {
+            // Update product name
+            document.getElementById('resultProductName').textContent = foodData.name || 'Unknown Product';
+            
+            // Update description
+            const descElement = document.getElementById('resultDescription');
+            if (foodData.description) {
+                descElement.innerHTML = foodData.description;
+                descElement.style.display = 'block';
+            } else {
+                descElement.style.display = 'none';
+            }
+            
+            // Update weight
+            document.getElementById('resultWeight').textContent = foodData.weight || 'N/A';
+            
+            // Update nutrition table
+            const nutritionTable = document.getElementById('resultNutritionTable');
+            if (foodData.nutrition) {
+                nutritionTable.innerHTML = `
+                    <table style="width: 100%; border-collapse: collapse; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                        <thead>
+                            <tr style="background: #f8f9fa;">
+                                <th style="padding: 12px; text-align: left; font-weight: 600; color: #2d3e1f; border-bottom: 2px solid #e9ecef;">Nutrient</th>
+                                <th style="padding: 12px; text-align: right; font-weight: 600; color: #2d3e1f; border-bottom: 2px solid #e9ecef;">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="border-bottom: 1px solid #e9ecef;">
+                                <td style="padding: 12px; font-weight: 500;">Calories</td>
+                                <td style="padding: 12px; text-align: right; font-weight: 600; color: #2d3e1f;">${formatNutrition(foodData.nutrition.calories)} kcal</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #e9ecef;">
+                                <td style="padding: 12px; font-weight: 500;">Carbohydrates</td>
+                                <td style="padding: 12px; text-align: right; font-weight: 600; color: #2d3e1f;">${formatNutrition(foodData.nutrition.carbs)} g</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #e9ecef;">
+                                <td style="padding: 12px; font-weight: 500;">Protein</td>
+                                <td style="padding: 12px; text-align: right; font-weight: 600; color: #2d3e1f;">${formatNutrition(foodData.nutrition.protein)} g</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #e9ecef;">
+                                <td style="padding: 12px; font-weight: 500;">Fats</td>
+                                <td style="padding: 12px; text-align: right; font-weight: 600; color: #2d3e1f;">${formatNutrition(foodData.nutrition.fats)} g</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #e9ecef;">
+                                <td style="padding: 12px; font-weight: 500;">Sugar</td>
+                                <td style="padding: 12px; text-align: right; font-weight: 600; color: #2d3e1f;">${formatNutrition(foodData.nutrition.sugar)} g</td>
+                            </tr>
+                            ${foodData.nutrition.fiber ? `<tr style="border-bottom: 1px solid #e9ecef;"><td style="padding: 12px; font-weight: 500;">Fiber</td><td style="padding: 12px; text-align: right; font-weight: 600; color: #2d3e1f;">${formatNutrition(foodData.nutrition.fiber)} g</td></tr>` : ''}
+                            ${foodData.nutrition.sodium ? `<tr><td style="padding: 12px; font-weight: 500;">Sodium</td><td style="padding: 12px; text-align: right; font-weight: 600; color: #2d3e1f;">${formatNutrition(foodData.nutrition.sodium)} mg</td></tr>` : ''}
+                        </tbody>
+                    </table>
+                `;
+            }
+            
+            // Update ingredients
+            const ingredientsContainer = document.getElementById('resultIngredients');
+            if (foodData.ingredients && foodData.ingredients.length > 0) {
+                ingredientsContainer.innerHTML = foodData.ingredients.map(ing => `
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid #f0f0f0;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <span style="font-size: 24px;">${ing.icon || '📦'}</span>
+                            <span style="font-size: 16px; color: #2d3e1f;">${ing.name || 'Unknown'}</span>
+                        </div>
+                        <span style="font-size: 15px; color: #666; font-weight: 500;">${ing.amount || 'N/A'}</span>
+                    </div>
+                `).join('');
+            }
+            
+            // Update chart center image
+            if (image) {
+                document.getElementById('chartCenterImage').style.backgroundImage = `url('${image}')`;
+            }
+            
+            // Draw pie chart
+            drawNutritionChart(foodData.nutrition);
+            
+            // Update health rating
+            const healthRating = document.getElementById('healthRating');
+            if (foodData.healthRating) {
+                const badges = {
+                    'safe': { icon: '✅', text: 'Mostly Safe', color: '#28a745' },
+                    'occasional': { icon: '🍊', text: 'Consume Occasionally', color: '#ffc107' },
+                    'high-risk': { icon: '☁️', text: 'High Risk', color: '#dc3545' },
+                    'unknown': { icon: 'ℹ️', text: 'Unknown', color: '#6c757d' }
+                };
+                const badge = badges[foodData.healthRating.toLowerCase()] || badges['unknown'];
+                healthRating.innerHTML = `
+                    <div style="display: inline-flex; align-items: center; gap: 10px; padding: 12px 24px; background: ${badge.color}20; border-radius: 25px; border: 2px solid ${badge.color};">
+                        <span style="font-size: 24px;">${badge.icon}</span>
+                        <span style="font-weight: 600; color: ${badge.color}; font-size: 16px;">${badge.text}</span>
+                    </div>
+                    ${foodData.recommendation ? `<p style="margin-top: 15px; color: #666; font-size: 15px;"><strong>Recommendation:</strong> ${foodData.recommendation}</p>` : ''}
+                    ${foodData.additionalNotes ? `<p style="margin-top: 10px; color: #666; font-size: 14px;">${foodData.additionalNotes}</p>` : ''}
+                `;
+            }
+        }
+
+        // Function to draw nutrition pie chart
+        function drawNutritionChart(nutrition) {
+            const canvas = document.getElementById('nutritionChart');
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const radius = 140;
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Calculate total and percentages
+            const total = (nutrition.carbs || 0) + (nutrition.protein || 0) + (nutrition.fats || 0);
+            if (total === 0) return;
+            
+            const data = [
+                { value: nutrition.carbs || 0, color: '#4CAF50', label: 'Carbs' },
+                { value: nutrition.protein || 0, color: '#2196F3', label: 'Protein' },
+                { value: nutrition.fats || 0, color: '#FF9800', label: 'Fats' }
+            ];
+            
+            // Draw pie slices
+            let currentAngle = -Math.PI / 2;
+            data.forEach(segment => {
+                const sliceAngle = (segment.value / total) * 2 * Math.PI;
+                
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY);
+                ctx.arc(centerX, centerY, radius, currentAngle, currentAngle + sliceAngle);
+                ctx.closePath();
+                ctx.fillStyle = segment.color;
+                ctx.fill();
+                
+                currentAngle += sliceAngle;
+            });
+            
+            // Draw white circle in center
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, 70, 0, 2 * Math.PI);
+            ctx.fillStyle = 'white';
+            ctx.fill();
+            
+            // Update legend
+            const legend = document.getElementById('chartLegend');
+            legend.innerHTML = data.map(segment => `
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <div style="width: 16px; height: 16px; background: ${segment.color}; border-radius: 3px;"></div>
+                    <span style="font-size: 14px; color: #2d3e1f;">${segment.label}: ${formatNutrition(segment.value)}g (${formatNutrition((segment.value / total) * 100)}%)</span>
+                </div>
+            `).join('');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Analyzer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #d4e0c8 0%, #e8f0dc 50%, #cfd9c3 100%);
+            min-height: 100vh;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                url("data:image/svg+xml,%3Csvg width='160' height='160' viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%234a5f3a' stroke-width='1' opacity='0.12'%3E%3C!-- Carrot --%3E%3Cpath d='M30 60 L 30 85 Q 30 95, 35 95 Q 40 95, 40 85 L 40 60 Z' stroke-width='1.2'/%3E%3Cpath d='M32 55 L 30 60' /%3E%3Cpath d='M35 53 L 35 60' /%3E%3Cpath d='M38 55 L 40 60' /%3E%3Cline x1='32' y1='70' x2='28' y2='72' /%3E%3Cline x1='38' y1='75' x2='42' y2='77' /%3E%3C!-- Cabbage --%3E%3Ccircle cx='90' cy='35' r='18' stroke-width='1.5'/%3E%3Cpath d='M75 35 Q 90 28, 105 35' /%3E%3Cpath d='M75 35 Q 90 42, 105 35' /%3E%3Cpath d='M82 25 Q 90 30, 98 25' /%3E%3Cpath d='M85 45 Q 90 40, 95 45' /%3E%3C!-- Tomato --%3E%3Ccircle cx='130' cy='75' r='12' stroke-width='1.2'/%3E%3Cpath d='M125 63 Q 130 65, 135 63 L 130 68' fill='%234a5f3a' opacity='0.1'/%3E%3C!-- Broccoli --%3E%3Cellipse cx='25' cy='120' rx='10' ry='12' stroke-width='1.2'/%3E%3Ccircle cx='20' cy='115' r='5' /%3E%3Ccircle cx='30' cy='115' r='5' /%3E%3Ccircle cx='25' cy='110' r='5' /%3E%3Cline x1='25' y1='132' x2='25' y2='145' stroke-width='2'/%3E%3C!-- Bell Pepper --%3E%3Cpath d='M125 120 Q 120 125, 120 135 Q 120 145, 130 145 Q 140 145, 140 135 Q 140 125, 135 120 Z' stroke-width='1.2'/%3E%3Cpath d='M128 115 L 128 120 L 132 120 L 132 115' stroke-width='1.2'/%3E%3C!-- Leafy Green --%3E%3Cpath d='M70 100 Q 65 95, 70 90 Q 75 95, 70 100 Z' stroke-width='1'/%3E%3Cpath d='M75 105 Q 70 100, 75 95 Q 80 100, 75 105 Z' stroke-width='1'/%3E%3Cpath d='M80 110 Q 75 105, 80 100 Q 85 105, 80 110 Z' stroke-width='1'/%3E%3Cline x1='70' y1='100' x2='75' y2='120' stroke-width='1.5'/%3E%3C!-- Cucumber --%3E%3Cellipse cx='145' cy='25' rx='8' ry='20' stroke-width='1.2'/%3E%3Cline x1='145' y1='10' x2='145' y2='40' stroke-dasharray='3,2' opacity='0.5'/%3E%3C!-- Peas in pod --%3E%3Cpath d='M60 140 Q 55 135, 60 130 Q 75 130, 80 140 Q 75 145, 60 145 Z' stroke-width='1.2'/%3E%3Ccircle cx='62' cy='138' r='3' fill='%234a5f3a' opacity='0.1'/%3E%3Ccircle cx='70' cy='137' r='3' fill='%234a5f3a' opacity='0.1'/%3E%3Ccircle cx='78' cy='138' r='3' fill='%234a5f3a' opacity='0.1'/%3E%3C/g%3E%3C/svg%3E");
+            background-size: 160px 160px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Sidebar with SVG icons instead of emojis */
+        .sidebar {
+            width: 80px;
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(20px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 0;
+            gap: 25px;
+        }
+
+        .sidebar-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .sidebar-icon:hover {
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .sidebar-icon.active {
+            background: #6b8e4e;
+        }
+
+        .sidebar-icon svg {
+            width: 20px;
+            height: 20px;
+            fill: #4a4a4a;
+        }
+
+        .sidebar-icon.active svg {
+            fill: white;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 25px 50px;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            padding: 12px 25px;
+            border-radius: 16px;
+            margin-bottom: 40px;
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1a3d2e;
+            letter-spacing: 1px;
+        }
+
+        .search-box {
+            flex: 1;
+            max-width: 450px;
+            margin: 0 40px;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 10px 40px 10px 20px;
+            border: none;
+            border-radius: 24px;
+            background: white;
+            font-size: 14px;
+            color: #333;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .search-box input::placeholder {
+            color: #999;
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 18px;
+            height: 18px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .settings-btn, .menu-btn {
+            width: 35px;
+            height: 35px;
+            cursor: pointer;
+            fill: #666;
+        }
+
+        .profile-avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #d8a498 0%, #c4948a 100%);
+            border: 2px solid white;
+            cursor: pointer;
+        }
+
+        /* Hero Section */
+        .hero-title {
+            font-size: 52px;
+            font-weight: 700;
+            color: #1a3d2e;
+            margin-bottom: 25px;
+            letter-spacing: -0.5px;
+        }
+
+        .search-bar-main {
+            display: flex;
+            align-items: center;
+            background: white;
+            padding: 14px 22px;
+            border-radius: 14px;
+            max-width: 420px;
+            margin-bottom: 45px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+
+        .search-bar-main svg {
+            width: 20px;
+            height: 20px;
+            fill: #888;
+            margin-right: 12px;
+        }
+
+        .search-bar-main input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 15px;
+            color: #333;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .search-bar-main input::placeholder {
+            color: #aaa;
+        }
+
+        .search-actions {
+            display: flex;
+            gap: 12px;
+            margin-left: 12px;
+        }
+
+        .search-actions svg {
+            width: 22px;
+            height: 22px;
+            fill: #999;
+            cursor: pointer;
+            transition: fill 0.2s;
+        }
+
+        .search-actions svg:hover {
+            fill: #666;
+        }
+
+        /* Main Grid */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 35px;
+            margin-bottom: 50px;
+        }
+
+        /* Upload Card */
+        .upload-section {
+            background: white;
+            padding: 45px;
+            border-radius: 22px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+        }
+
+        .upload-icon-box {
+            width: 75px;
+            height: 75px;
+            background: linear-gradient(135deg, #7fa05a 0%, #6b8e4e 100%);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 22px;
+        }
+
+        .upload-icon-box svg {
+            width: 38px;
+            height: 38px;
+            fill: white;
+        }
+
+        .upload-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1a3d2e;
+            margin-bottom: 6px;
+        }
+
+        .upload-subtitle {
+            font-size: 15px;
+            color: #888;
+            margin-bottom: 28px;
+        }
+
+        .analyze-btn {
+            background: linear-gradient(135deg, #7fa05a 0%, #6b8e4e 100%);
+            color: white;
+            border: none;
+            padding: 16px 45px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Inter', sans-serif;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .analyze-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(107, 142, 78, 0.35);
+        }
+
+        .analyze-btn svg {
+            width: 14px;
+            height: 14px;
+            fill: white;
+        }
+
+        /* Food Display */
+        .food-display {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .food-circle {
+            width: 420px;
+            height: 420px;
+            background: white;
+            border-radius: 50%;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.12);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .food-image-inner {
+            width: 85%;
+            height: 85%;
+            border-radius: 50%;
+            background: url('https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&q=80') center/cover;
+            background-color: #7fa05a;
+        }
+
+        .decoration-blob {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(139, 195, 74, 0.2);
+            filter: blur(20px);
+        }
+
+        .blob-1 {
+            width: 70px;
+            height: 70px;
+            top: -15px;
+            left: 18%;
+        }
+
+        .blob-2 {
+            width: 55px;
+            height: 55px;
+            bottom: 20px;
+            right: 18%;
+            background: rgba(255, 193, 7, 0.2);
+        }
+
+        /* Analysis Section */
+        .section-heading {
+            font-size: 30px;
+            font-weight: 700;
+            color: #1a3d2e;
+            margin-bottom: 25px;
+        }
+
+        .analysis-card {
+            background: white;
+            padding: 35px;
+            border-radius: 22px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+        }
+
+        .food-header-section {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+
+        .food-details h3 {
+            font-size: 26px;
+            color: #1a3d2e;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .food-weight-text {
+            color: #888;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        .food-thumbnails {
+            display: flex;
+            gap: 12px;
+        }
+
+        .food-thumb {
+            width: 75px;
+            height: 75px;
+            border-radius: 14px;
+            background: url('https://images.unsplash.com/photo-1626645738196-c2a7c87a8f58?w=100') center/cover;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.1);
+        }
+
+        .thumb-2 {
+            background: url('https://images.unsplash.com/photo-1598103442097-8b74394b95c6?w=100') center/cover;
+        }
+
+        .thumb-3 {
+            background: url('https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=100') center/cover;
+        }
+
+        /* Progress Bars */
+        .metrics {
+            margin-bottom: 25px;
+        }
+
+        .metric-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 14px;
+        }
+
+        .metric-icon {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .icon-green {
+            background: #8bc34a;
+        }
+
+        .icon-yellow {
+            background: #ffc107;
+        }
+
+        .progress-track {
+            flex: 1;
+            height: 7px;
+            background: #f0f0f0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.4s ease;
+        }
+
+        .bar-green {
+            background: linear-gradient(90deg, #8bc34a 0%, #7fa05a 100%);
+        }
+
+        .bar-yellow {
+            background: linear-gradient(90deg, #ffc107 0%, #ffb300 100%);
+        }
+
+        .metric-value {
+            font-weight: 600;
+            color: #1a3d2e;
+            min-width: 55px;
+            text-align: right;
+            font-size: 14px;
+        }
+
+        .warning-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #ffebee;
+            color: #c62828;
+            padding: 7px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 20px;
+        }
+
+        /* Ingredients Grid */
+        .ingredients-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .ingredient-card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px;
+            background: #fafafa;
+            border-radius: 12px;
+        }
+
+        .ingredient-card-icon {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .ingredient-name-text {
+            flex: 1;
+            font-weight: 500;
+            color: #1a3d2e;
+            font-size: 15px;
+        }
+
+        .ingredient-amount-text {
+            color: #888;
+            font-size: 14px;
+        }
+
+        /* Nutrition Summary */
+        .nutrition-summary {
+            display: flex;
+            gap: 35px;
+            padding: 22px;
+            background: #fafafa;
+            border-radius: 14px;
+        }
+
+        .nutrition-item {
+            text-align: center;
+        }
+
+        .nutrition-value {
+            font-size: 30px;
+            font-weight: 700;
+            color: #1a3d2e;
+            margin-bottom: 5px;
+        }
+
+        .nutrition-label {
+            font-size: 13px;
+            color: #888;
+        }
+
+        @media (max-width: 1024px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .ingredients-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 20px;
+            }
+
+            .hero-title {
+                font-size: 36px;
+            }
+
+            .header {
+                flex-wrap: wrap;
+            }
+
+            .search-box {
+                margin: 15px 0;
+                order: 3;
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-icon active">
+                <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+            </div>
+            <div class="sidebar-icon">
+                <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+            </div>
+            <div class="sidebar-icon">
+                <svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+            </div>
+            <div class="sidebar-icon">
+                <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg>
+            </div>
+            <div class="sidebar-icon">
+                <svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"/></svg>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <div class="header">
+                <div class="logo">NAME</div>
+                <div class="search-box">
+                    <input type="text" placeholder="Analyze your meal ...">
+                    <svg class="search-icon" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" fill="#999"/></svg>
+                </div>
+                <div class="header-right">
+                    <svg class="menu-btn" viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+                    <div class="profile-avatar"></div>
+                </div>
+            </div>
+
+            <!-- Hero -->
+            <h1 class="hero-title">Understand food, instantly.</h1>
+
+            <div class="search-bar-main">
+                <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                <input type="text" placeholder="Analyze your meal">
+                <div class="search-actions">
+                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M9 2L7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-3.17L15 2H9zm3 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/></svg>
+                    <svg viewBox="0 0 24 24"><path d="M6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
+                </div>
+            </div>
+
+            <!-- Main Grid -->
+            <div class="main-grid">
+                <!-- Upload Section -->
+                <div class="upload-section">
+                    <div class="upload-icon-box">
+                        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M9 2L7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-3.17L15 2H9zm3 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/></svg>
+                    </div>
+                    <div class="upload-title">Upload food label /</div>
+                    <div class="upload-subtitle">image / text</div>
+                    <input type="file" id="foodUpload" accept="image/*" style="display: none;">
+                    <button class="analyze-btn" onclick="document.getElementById('foodUpload').click()">
+                        <svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
+                        Analyze Food
+                    </button>
+                </div>
+
+                <!-- Food Display -->
+                <div class="food-display">
+                    <div class="decoration-blob blob-1"></div>
+                    <div class="food-circle">
+                        <div class="food-image-inner" id="foodDisplay"></div>
+                    </div>
+                    <div class="decoration-blob blob-2"></div>
+                </div>
+            </div>
+
+            <!-- Analysis Section -->
+            <h2 class="section-heading">What should I know?</h2>
+
+            <div class="analysis-card">
+                <div class="food-header-section">
+                    <div class="food-details">
+                        <h3>Fresh Garden Salad</h3>
+                        <div class="food-weight-text">450 g (1 serving)</div>
+
+                        <div class="metrics">
+                            <div class="metric-row">
+                                <div class="metric-icon icon-green"></div>
+                                <span style="min-width: 80px; font-size: 13px; color: #666;">Health Score</span>
+                                <div class="progress-track">
+                                    <div class="progress-bar-fill bar-green" style="width: 85%;"></div>
+                                </div>
+                                <div class="metric-value">85%</div>
+                            </div>
+                            <div class="metric-row">
+                                <div class="metric-icon" style="background: #ff9800;"></div>
+                                <span style="min-width: 80px; font-size: 13px; color: #666;">Calories</span>
+                                <div class="progress-track">
+                                    <div class="progress-bar-fill" style="width: 65%; background: linear-gradient(90deg, #ff9800 0%, #ff6f00 100%);"></div>
+                                </div>
+                                <div class="metric-value">320 kcal</div>
+                            </div>
+                        </div>
+
+                        <div class="warning-label" style="background: #e8f5e9; color: #2e7d32;">
+                            <span>✓</span>
+                            <span>Healthy Choice</span>
+                        </div>
+                    </div>
+
+                    <div class="food-thumbnails">
+                        <div class="food-thumb"></div>
+                        <div class="food-thumb thumb-2"></div>
+                        <div class="food-thumb thumb-3"></div>
+                    </div>
+                </div>
+
+                <!-- Nutritional Components -->
+                <h4 style="font-size: 16px; font-weight: 600; color: #1a2614; margin-bottom: 15px;">Main Ingredients</h4>
+                <div class="ingredients-grid">
+                    <div class="ingredient-card">
+                        <div class="ingredient-card-icon">🥬</div>
+                        <div class="ingredient-name-text">Lettuce</div>
+                        <div class="ingredient-amount-text">150 g</div>
+                    </div>
+                    <div class="ingredient-card">
+                        <div class="ingredient-card-icon">🥕</div>
+                        <div class="ingredient-name-text">Carrots</div>
+                        <div class="ingredient-amount-text">80 g</div>
+                    </div>
+                    <div class="ingredient-card">
+                        <div class="ingredient-card-icon">🍅</div>
+                        <div class="ingredient-name-text">Tomatoes</div>
+                        <div class="ingredient-amount-text">120 g</div>
+                    </div>
+                    <div class="ingredient-card">
+                        <div class="ingredient-card-icon">🥒</div>
+                        <div class="ingredient-name-text">Cucumber</div>
+                        <div class="ingredient-amount-text">90 g</div>
+                    </div>
+                    <div class="ingredient-card">
+                        <div class="ingredient-card-icon">🫒</div>
+                        <div class="ingredient-name-text">Olive Oil</div>
+                        <div class="ingredient-amount-text">15 ml</div>
+                    </div>
+                    <div class="ingredient-card">
+                        <div class="ingredient-card-icon">🧂</div>
+                        <div class="ingredient-name-text">Seasonings</div>
+                        <div class="ingredient-amount-text">5 g</div>
+                    </div>
+                </div>
+
+                <!-- Nutrition Summary -->
+                <h4 style="font-size: 16px; font-weight: 600; color: #1a2614; margin: 25px 0 15px 0;">Nutritional Information (per serving)</h4>
+                <div class="nutrition-summary" style="grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); display: grid; gap: 20px;">
+                    <div class="nutrition-item">
+                        <div class="nutrition-value" style="font-size: 24px;">💪 18g</div>
+                        <div class="nutrition-label">Protein</div>
+                    </div>
+                    <div class="nutrition-item">
+                        <div class="nutrition-value" style="font-size: 24px;">🔥 320</div>
+                        <div class="nutrition-label">Calories</div>
+                    </div>
+                    <div class="nutrition-item">
+                        <div class="nutrition-value" style="font-size: 24px;">🌾 12g</div>
+                        <div class="nutrition-label">Fiber</div>
+                    </div>
+                    <div class="nutrition-item">
+                        <div class="nutrition-value" style="font-size: 24px;">🥛 45g</div>
+                        <div class="nutrition-label">Carbs</div>
+                    </div>
+                    <div class="nutrition-item">
+                        <div class="nutrition-value" style="font-size: 24px;">🧈 14g</div>
+                        <div class="nutrition-label">Fats</div>
+                    </div>
+                    <div class="nutrition-item">
+                        <div class="nutrition-value" style="font-size: 24px;">🍬 8g</div>
+                        <div class="nutrition-label">Sugar</div>
+                    </div>
+                </div>
+                
+                <h4 style="font-size: 16px; font-weight: 600; color: #1a2614; margin: 25px 0 15px 0;">Vitamins & Minerals</h4>
+                <div class="nutrition-summary" style="grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); display: grid; gap: 15px;">
+                    <div class="nutrition-item">
+                        <div class="nutrition-value" style="font-size: 20px; color: #ff9800;">A</div>
+                        <div class="nutrition-label">Vitamin A<br><small>85%</small></div>
+                    </div>
+                    <div class="nutrition-item">
+                        <div class="nutrition-value" style="font-size: 20px; color: #ff9800;">C</div>
+                        <div class="nutrition-label">Vitamin C<br><small>120%</small></div>
+                    </div>
+                    <div class="nutrition-item">
+                        <div class="nutrition-value" style="font-size: 20px; color: #ff9800;">K</div>
+                        <div class="nutrition-label">Vitamin K<br><small>95%</small></div>
+                    </div>
+                    <div class="nutrition-item">
+                        <div class="nutrition-value" style="font-size: 20px; color: #4a5f3a;">Fe</div>
+                        <div class="nutrition-label">Iron<br><small>25%</small></div>
+                    </div>
+                    <div class="nutrition-item">
+                        <div class="nutrition-value" style="font-size: 20px; color: #4a5f3a;">Ca</div>
+                        <div class="nutrition-label">Calcium<br><small>15%</small></div>
+                    </div>
+                    <div class="nutrition-item">
+                        <div class="nutrition-value" style="font-size: 20px; color: #4a5f3a;">Mg</div>
+                        <div class="nutrition-label">Magnesium<br><small>30%</small></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/app.js"></script>
+    <script>
+        // File upload functionality
+        const fileInput = document.getElementById('foodUpload');
+        const foodDisplay = document.getElementById('foodDisplay');
+        const analyzeBtn = document.querySelector('.analyze-btn');
+
+        fileInput.addEventListener('change', async function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                // Show loading state
+                analyzeBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg> Analyzing...';
+                analyzeBtn.disabled = true;
+
+                // Display image preview
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    foodDisplay.style.backgroundImage = `url('${event.target.result}')`;
+                    foodDisplay.style.backgroundSize = 'cover';
+                    foodDisplay.style.backgroundPosition = 'center';
+                };
+                reader.readAsDataURL(file);
+
+                try {
+                    // Call the backend API
+                    const foodData = await analyzeFood(file);
+
+                    // Store the uploaded image for detail page
+                    const imageReader = new FileReader();
+                    imageReader.onload = function(e) {
+                        localStorage.setItem('uploadedImage', e.target.result);
+                        // Redirect to detail page
+                        window.location.href = 'detail.html';
+                    };
+                    imageReader.readAsDataURL(file);
+
+                } catch (error) {
+                    console.error('Analysis failed:', error);
+                    alert('Analysis failed. Please try again.');
+                    // Reset button
+                    analyzeBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg> Analyze Food';
+                    analyzeBtn.disabled = false;
+                }
+            }
+        });
+
+        // Sidebar navigation
+        document.querySelectorAll('.sidebar-icon').forEach(icon => {
+            icon.addEventListener('click', function() {
+                document.querySelectorAll('.sidebar-icon').forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // Click analysis card to view details
+        document.querySelector('.analysis-card').addEventListener('click', function() {
+            window.location.href = 'detail.html';
+        });
+    </script>
+</body>
+</html>

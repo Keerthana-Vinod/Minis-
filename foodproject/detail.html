@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tomato Paste - Food Analysis</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #f5f5f0 0%, #e8efe0 50%, #f0f5e8 100%);
+            min-height: 100vh;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2d3e1f;
+            letter-spacing: 2px;
+        }
+
+        .header-search {
+            flex: 1;
+            max-width: 500px;
+            margin: 0 40px;
+            position: relative;
+        }
+
+        .header-search input {
+            width: 100%;
+            padding: 12px 45px 12px 40px;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            background: white;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .header-search::before {
+            content: '🔍';
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 16px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .settings-icon {
+            cursor: pointer;
+            font-size: 20px;
+        }
+
+        .menu-icon {
+            cursor: pointer;
+            font-size: 24px;
+        }
+
+        .profile-pic {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #e8b4a8 0%, #d8a498 100%);
+            border: 3px solid white;
+            cursor: pointer;
+        }
+
+        .main-content {
+            padding: 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Food Analysis Card */
+        .analysis-container {
+            background: white;
+            border-radius: 25px;
+            padding: 50px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            margin-bottom: 50px;
+        }
+
+        .food-title {
+            font-size: 42px;
+            color: #2d3e1f;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .food-description {
+            font-size: 16px;
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            max-width: 700px;
+        }
+
+        .food-weight {
+            color: #888;
+            font-size: 18px;
+            margin-bottom: 40px;
+        }
+
+        .analysis-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+        }
+
+        /* Nutrition Stats */
+        .nutrition-section {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .nutrition-stats {
+            display: flex;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #2d3e1f;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #888;
+            text-transform: capitalize;
+        }
+
+        /* Ingredients */
+        .ingredients-section {
+            margin-top: 30px;
+        }
+
+        .ingredients-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #2d3e1f;
+            margin-bottom: 20px;
+        }
+
+        .ingredient-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .ingredient-item:last-child {
+            border-bottom: none;
+        }
+
+        .ingredient-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .ingredient-icon {
+            font-size: 24px;
+        }
+
+        .ingredient-name {
+            font-size: 16px;
+            color: #2d3e1f;
+        }
+
+        .ingredient-amount {
+            font-size: 15px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        /* Pie Chart Section */
+        .chart-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .pie-chart-container {
+            position: relative;
+            width: 380px;
+            height: 380px;
+            margin-bottom: 40px;
+        }
+
+        .flower-chart {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .pie-chart {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            position: relative;
+        }
+
+        .pie-svg {
+            transform: rotate(-90deg);
+        }
+
+        .food-image-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 50%, #c44569 100%);
+            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="%23ff6b6b"/></svg>');
+            background-size: cover;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            z-index: 15;
+            border: 5px solid white;
+        }
+
+        .chart-label {
+            position: absolute;
+            font-size: 12px;
+            font-weight: 600;
+            color: #2d3e1f;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 6px 12px;
+            border-radius: 15px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            white-space: nowrap;
+        }
+
+        .label-carbs {
+            top: -5%;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .label-fats {
+            top: 15%;
+            right: -12%;
+        }
+
+        .label-sugar {
+            bottom: 15%;
+            right: -12%;
+        }
+
+        .label-added-sugar {
+            bottom: -5%;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .label-garlic {
+            bottom: 15%;
+            left: -12%;
+        }
+
+        .label-salt {
+            top: 15%;
+            left: -12%;
+        }
+
+        /* Recommendation Badge */
+        .recommendation {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+            color: #e65100;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(230, 81, 0, 0.2);
+        }
+
+        .recommendation::before {
+            content: '🍊';
+            font-size: 24px;
+        }
+
+        .bookmark-icon {
+            cursor: pointer;
+            font-size: 24px;
+            margin-left: 15px;
+        }
+
+        /* Recent Analyses Section */
+        .recent-section {
+            margin-top: 50px;
+        }
+
+        .section-title {
+            font-size: 28px;
+            color: #2d3e1f;
+            font-weight: 700;
+            margin-bottom: 30px;
+        }
+
+        .recent-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .recent-card {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+
+        .recent-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        .recent-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .recent-food-name {
+            font-size: 20px;
+            font-weight: 600;
+            color: #2d3e1f;
+        }
+
+        .recent-emoji {
+            font-size: 28px;
+        }
+
+        .recent-food-weight {
+            color: #888;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+
+        .health-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .badge-high-risk {
+            background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+            color: #c62828;
+        }
+
+        .badge-occasional {
+            background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+            color: #e65100;
+        }
+
+        .badge-safe {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            color: #2e7d32;
+        }
+
+        .health-note {
+            font-size: 12px;
+            color: #666;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+
+        .nutrition-bars {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+
+        .mini-bar {
+            height: 6px;
+            border-radius: 3px;
+        }
+
+        .nutrition-percentages {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            color: #888;
+        }
+
+        /* Pie Chart SVG */
+        .pie-svg {
+            transform: rotate(-90deg);
+        }
+
+        @media (max-width: 1024px) {
+            .analysis-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .recent-grid {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 20px;
+            }
+
+            .analysis-container {
+                padding: 30px 20px;
+            }
+
+            .food-title {
+                font-size: 32px;
+            }
+
+            .header {
+                padding: 15px 20px;
+            }
+
+            .header-search {
+                margin: 0 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="logo">NAME</div>
+        <div class="header-search">
+            <input type="text" placeholder="Analyze your meal">
+        </div>
+        <div class="header-right">
+            <span class="settings-icon">⚙️</span>
+            <span class="menu-icon">☰</span>
+            <div class="profile-pic"></div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Food Analysis Card -->
+        <div class="analysis-container">
+            <h1 class="food-title">Tomato Paste</h1>
+            <p class="food-description">A concentrated tomato product commonly used as a cooking ingredient to add rich tomato flavor to dishes.</p>
+            <p class="food-weight">320 g</p>
+
+            <div class="analysis-grid">
+                <!-- Left Side - Nutrition & Ingredients -->
+                <div class="nutrition-section">
+                    <div class="nutrition-stats">
+                        <div class="stat">
+                            <div class="stat-value">18%</div>
+                            <div class="stat-label">Carbs</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">0.5%</div>
+                            <div class="stat-label">Fats</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">12.4%</div>
+                            <div class="stat-label">Sugar</div>
+                        </div>
+                    </div>
+
+                    <!-- Ingredients List -->
+                    <div class="ingredients-section">
+                        <h3 class="ingredients-title">Ingredients</h3>
+                        <div class="ingredient-item">
+                            <div class="ingredient-left">
+                                <span class="ingredient-icon">🍅</span>
+                                <span class="ingredient-name">Tomatoes</span>
+                            </div>
+                            <span class="ingredient-amount">128 g</span>
+                        </div>
+                        <div class="ingredient-item">
+                            <div class="ingredient-left">
+                                <span class="ingredient-icon">🍬</span>
+                                <span class="ingredient-name">Added Sugar</span>
+                            </div>
+                            <span class="ingredient-amount">64 g</span>
+                        </div>
+                        <div class="ingredient-item">
+                            <div class="ingredient-left">
+                                <span class="ingredient-icon">🧄</span>
+                                <span class="ingredient-name">Garlic</span>
+                            </div>
+                            <span class="ingredient-amount">0.48 g</span>
+                        </div>
+                        <div class="ingredient-item">
+                            <div class="ingredient-left">
+                                <span class="ingredient-icon">🧂</span>
+                                <span class="ingredient-name">Salt</span>
+                            </div>
+                            <span class="ingredient-amount">3.0 g</span>
+                        </div>
+                        <div class="ingredient-item">
+                            <div class="ingredient-left">
+                                <span class="ingredient-icon">🟢</span>
+                                <span class="ingredient-name">Other Ingredients</span>
+                            </div>
+                            <span class="ingredient-amount">48 g</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Side - Pie Chart -->
+                <div class="chart-section">
+                    <div class="pie-chart-container">
+                        <div class="flower-chart">
+                            <!-- Pie Chart SVG -->
+                            <svg class="pie-svg" width="380" height="380" viewBox="0 0 100 100">
+                                <!-- Added Sugar - 25% -->
+                                <circle cx="50" cy="50" r="40" fill="none" stroke="#FFD93D" stroke-width="20" 
+                                        stroke-dasharray="25 75" stroke-dashoffset="0"/>
+                                <!-- Garlic - 19.4% -->
+                                <circle cx="50" cy="50" r="40" fill="none" stroke="#D8E9A8" stroke-width="20" 
+                                        stroke-dasharray="19.4 80.6" stroke-dashoffset="-25"/>
+                                <!-- Other Ingredients - 19.4% -->
+                                <circle cx="50" cy="50" r="40" fill="none" stroke="#B4D4E1" stroke-width="20" 
+                                        stroke-dasharray="19.4 80.6" stroke-dashoffset="-44.4"/>
+                                <!-- Sugar - 15.3% -->
+                                <circle cx="50" cy="50" r="40" fill="none" stroke="#FFE5D9" stroke-width="20" 
+                                        stroke-dasharray="15.3 84.7" stroke-dashoffset="-63.8"/>
+                                <!-- Salt - 11.3% -->
+                                <circle cx="50" cy="50" r="40" fill="none" stroke="#FFF4C4" stroke-width="20" 
+                                        stroke-dasharray="11.3 88.7" stroke-dashoffset="-79.1"/>
+                                <!-- Tomatoes - 9.7% -->
+                                <circle cx="50" cy="50" r="40" fill="none" stroke="#B5C99A" stroke-width="20" 
+                                        stroke-dasharray="9.7 90.3" stroke-dashoffset="-90.4"/>
+                            </svg>
+
+                            <!-- Center Image -->
+                            <div class="food-image-center"></div>
+
+                            <!-- Labels -->
+                            <div class="chart-label label-carbs">Added Sugar 25%</div>
+                            <div class="chart-label label-fats">Garlic 19.4%</div>
+                            <div class="chart-label label-sugar">Others 19.4%</div>
+                            <div class="chart-label label-added-sugar">Sugar 15.3%</div>
+                            <div class="chart-label label-garlic">Salt 11.3%</div>
+                            <div class="chart-label label-salt">Tomatoes 9.7%</div>
+                        </div>
+                    </div>
+
+                    <div class="recommendation">
+                        Consume Occasionally
+                        <span class="bookmark-icon">🔖</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Analyses Section -->
+        <div class="recent-section">
+            <h2 class="section-title">Recent Analyses</h2>
+            <div class="recent-grid">
+                <!-- Fried Chicken Card -->
+                <div class="recent-card" onclick="window.location.href='/'">
+
+                    <div class="recent-card-header">
+                        <div>
+                            <div class="recent-food-name">Fried Chicken</div>
+                            <span class="recent-emoji">🔥</span>
+                        </div>
+                    </div>
+                    <div class="recent-food-weight">500 g</div>
+                    <div class="health-badge badge-high-risk">
+                        ☁️ High Risk
+                    </div>
+                    <div class="health-note">
+                        Curtains added. Quaker squates smallthing vertual added lists.
+                    </div>
+                    <div class="nutrition-bars">
+                        <div class="mini-bar" style="flex: 0.3; background: #666;"></div>
+                        <div class="mini-bar" style="flex: 0.3; background: #FFD93D;"></div>
+                        <div class="mini-bar" style="flex: 1; background: #ddd;"></div>
+                        <div class="mini-bar" style="flex: 0.1; background: #ff6b6b;"></div>
+                    </div>
+                    <div class="nutrition-percentages">
+                        <span>📊 0.3%</span>
+                        <span>🟡 0.3%</span>
+                        <span>📈 1%</span>
+                    </div>
+                    <div class="nutrition-percentages" style="margin-top: 5px;">
+                        <span>26%</span>
+                    </div>
+                </div>
+
+                <!-- Muesli Bar Card -->
+                <div class="recent-card">
+                    <div class="recent-card-header">
+                        <div>
+                            <div class="recent-food-name">Muesli Bar</div>
+                            <span class="recent-emoji">🍪</span>
+                        </div>
+                    </div>
+                    <div class="recent-food-weight">50 g</div>
+                    <div class="health-badge badge-occasional">
+                        🍊 Consume Occasionally
+                    </div>
+                    <div class="health-note">
+                        Curtarons austeied sugar squaitting corummy and nicos
+                    </div>
+                    <div class="nutrition-bars">
+                        <div class="mini-bar" style="flex: 0.3; background: #666;"></div>
+                        <div class="mini-bar" style="flex: 1; background: #FFD93D;"></div>
+                        <div class="mini-bar" style="flex: 1; background: #ff9800;"></div>
+                    </div>
+                    <div class="nutrition-percentages">
+                        <span>📊 0.3%</span>
+                        <span>🟡 1.46%</span>
+                    </div>
+                    <div class="nutrition-percentages" style="margin-top: 5px;">
+                        <span>36%</span>
+                    </div>
+                </div>
+
+                <!-- Oatmeal Card -->
+                <div class="recent-card">
+                    <div class="recent-card-header">
+                        <div>
+                            <div class="recent-food-name">Oatmeal</div>
+                            <span class="recent-emoji">🌾</span>
+                        </div>
+                    </div>
+                    <div class="recent-food-weight">350 g</div>
+                    <div class="health-badge badge-safe">
+                        ✅ Mostly Safe
+                    </div>
+                    <div class="health-note">
+                        Rots in 136% and nutrients. good for aneart fasts.
+                    </div>
+                    <div class="nutrition-bars">
+                        <div class="mini-bar" style="flex: 1; background: #8bc34a;"></div>
+                        <div class="mini-bar" style="flex: 1; background: #FFD93D;"></div>
+                        <div class="mini-bar" style="flex: 1; background: #ff9800;"></div>
+                    </div>
+                    <div class="nutrition-percentages">
+                        <span>📊 59%</span>
+                    </div>
+                    <div class="nutrition-percentages" style="margin-top: 5px;">
+                        <span>65%</span>
+                    </div>
+                </div>
+
+                <!-- Tea Card (Partial) -->
+                <div class="recent-card" style="opacity: 0.7;">
+                    <div class="recent-card-header">
+                        <div>
+                            <div class="recent-food-name">Tea</div>
+                            <span class="recent-emoji">🍵</span>
+                        </div>
+                    </div>
+                    <div class="recent-food-weight">100 g</div>
+                    <div class="health-badge badge-safe">
+                        ✅ Safe
+                    </div>
+                    <div class="health-note">
+                        Soething Something nutrition and benefit infos.
+                    </div>
+                    <div class="nutrition-bars">
+                        <div class="mini-bar" style="flex: 1; background: #8bc34a;"></div>
+                        <div class="mini-bar" style="flex: 0.5; background: #FFD93D;"></div>
+                    </div>
+                    <div class="nutrition-percentages">
+                        <span>📊 95%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/app.js"></script>
+    <script>
+        // Load and display food analysis data
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('detail.html DOMContentLoaded');
+            const foodData = AppState.getCurrentFood();
+            console.log('Food data from AppState:', foodData);
+            const uploadedImage = localStorage.getItem('uploadedImage');
+            console.log('Uploaded image from localStorage:', uploadedImage ? 'present' : 'null');
+            
+            if (foodData) {
+                console.log('Calling displayFoodAnalysis with valid data');
+                displayFoodAnalysis(foodData, uploadedImage);
+            } else {
+                console.warn('No food data found. Redirecting to home.');
+                setTimeout(() => {
+                    window.location.href = '/';
+                }, 2000);
+            }
+        });
+
+        function displayFoodAnalysis(foodData, image) {
+            console.log('displayFoodAnalysis called with:', foodData);
+            
+            // Update title and weight
+            const titleElement = document.querySelector('.food-title');
+            const weightElement = document.querySelector('.food-weight');
+            
+            console.log('Title element found:', !!titleElement);
+            console.log('Weight element found:', !!weightElement);
+            
+            if (titleElement) {
+                titleElement.textContent = foodData.name || 'Unknown Product';
+                console.log('Title updated to:', foodData.name);
+            }
+            
+            if (weightElement) {
+                weightElement.textContent = foodData.weight || 'N/A';
+                console.log('Weight updated to:', foodData.weight);
+            }
+
+            // Update description - use the clean human-readable description
+            const descriptionElement = document.querySelector('.food-description');
+            
+            console.log('Description element found:', !!descriptionElement);
+            console.log('Food data description:', foodData.description); // Debug
+            console.log('Food data name:', foodData.name); // Debug
+            console.log('Has raw response:', !!foodData.rawResponse); // Debug
+            
+            if (foodData.description && foodData.description !== foodData.rawResponse) {
+                // Show health-oriented description prominently
+                descriptionElement.innerHTML = `<div style="font-size: 16px; line-height: 1.6; color: #333; padding: 15px; background: #f8f9fa; border-radius: 10px; border-left: 4px solid #4a5f3a;">${foodData.description}</div>`;
+                descriptionElement.style.display = 'block';
+            } else if (foodData.rawResponse) {
+                // Fallback: format raw response if no clean description
+                console.warn('Using raw response fallback');
+                descriptionElement.innerHTML = formatRawDescription(foodData.rawResponse);
+                descriptionElement.style.display = 'block';
+            } else {
+                descriptionElement.textContent = 'No description available.';
+                descriptionElement.style.display = 'block';
+            }
+
+            document.querySelector('.food-weight').textContent = foodData.weight || 'N/A';
+
+            // Update nutrition stats - show in a table format
+            const statsContainer = document.querySelector('.nutrition-stats');
+            console.log('Nutrition stats container found:', !!statsContainer);
+            
+            if (statsContainer) {
+                statsContainer.innerHTML = `
+                    <table style="width: 100%; border-collapse: collapse; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                        <thead>
+                            <tr style="background: #f8f9fa;">
+                                <th style="padding: 12px; text-align: left; font-weight: 600; color: #2d3e1f; border-bottom: 2px solid #e9ecef;">Nutrient</th>
+                                <th style="padding: 12px; text-align: right; font-weight: 600; color: #2d3e1f; border-bottom: 2px solid #e9ecef;">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="border-bottom: 1px solid #e9ecef;">
+                                <td style="padding: 12px; font-weight: 500;">Calories</td>
+                                <td style="padding: 12px; text-align: right; font-weight: 600; color: #2d3e1f;">${formatNutrition(foodData.nutrition.calories)} kcal</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #e9ecef;">
+                                <td style="padding: 12px; font-weight: 500;">Carbohydrates</td>
+                                <td style="padding: 12px; text-align: right; font-weight: 600;">${formatNutrition(foodData.nutrition.carbs)} g</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #e9ecef;">
+                                <td style="padding: 12px; font-weight: 500;">Protein</td>
+                                <td style="padding: 12px; text-align: right; font-weight: 600;">${formatNutrition(foodData.nutrition.protein)} g</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #e9ecef;">
+                                <td style="padding: 12px; font-weight: 500;">Fats</td>
+                                <td style="padding: 12px; text-align: right; font-weight: 600;">${formatNutrition(foodData.nutrition.fats)} g</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #e9ecef;">
+                                <td style="padding: 12px; font-weight: 500;">Sugar</td>
+                                <td style="padding: 12px; text-align: right; font-weight: 600;">${formatNutrition(foodData.nutrition.sugar)} g</td>
+                            </tr>
+                            ${foodData.nutrition.fiber ? `
+                            <tr style="border-bottom: 1px solid #e9ecef;">
+                                <td style="padding: 12px; font-weight: 500;">Fiber</td>
+                                <td style="padding: 12px; text-align: right; font-weight: 600;">${formatNutrition(foodData.nutrition.fiber)} g</td>
+                            </tr>` : ''}
+                            ${foodData.nutrition.sodium ? `
+                            <tr>
+                                <td style="padding: 12px; font-weight: 500;">Sodium</td>
+                                <td style="padding: 12px; text-align: right; font-weight: 600;">${formatNutrition(foodData.nutrition.sodium)} mg</td>
+                            </tr>` : ''}
+                        </tbody>
+                    </table>
+                `;
+                console.log('Nutrition table updated');
+            } else {
+                console.error('Nutrition stats container not found!');
+            }
+
+            // Update ingredients list
+            const ingredientsContainer = document.querySelector('.ingredients-section');
+            if (foodData.ingredients && foodData.ingredients.length > 0) {
+                let ingredientsHTML = '<h3 class="ingredients-title">Ingredients</h3>';
+                foodData.ingredients.forEach(ing => {
+                    ingredientsHTML += `
+                        <div class="ingredient-item">
+                            <div class="ingredient-left">
+                                <span class="ingredient-icon">${ing.icon || '📦'}</span>
+                                <span class="ingredient-name">${ing.name}</span>
+                            </div>
+                            <span class="ingredient-amount">${ing.amount}</span>
+                        </div>
+                    `;
+                });
+                ingredientsContainer.innerHTML = ingredientsHTML;
+            } else {
+                ingredientsContainer.innerHTML = '<h3 class="ingredients-title">Ingredients</h3><p style="color: #666; font-style: italic;">No ingredient information extracted from analysis.</p>';
+            }
+
+            // Update health rating badge
+            const healthRatingClass = foodData.healthRating === 'safe' ? 'badge-safe' :
+                                     foodData.healthRating === 'high-risk' ? 'badge-high-risk' :
+                                     'badge-occasional';
+            const healthIcon = foodData.healthRating === 'safe' ? '✅' :
+                              foodData.healthRating === 'high-risk' ? '⚠️' : '🍊';
+            const healthText = foodData.healthRating === 'safe' ? 'Mostly Safe' :
+                              foodData.healthRating === 'high-risk' ? 'High Risk' :
+                              'Consume Occasionally';
+
+            const recommendation = document.querySelector('.recommendation');
+            if (recommendation) {
+                recommendation.className = `recommendation ${healthRatingClass}`;
+                recommendation.textContent = foodData.recommendation || healthText;
+            }
+
+            // Display uploaded image if available
+            if (image) {
+                const chartSection = document.querySelector('.chart-section');
+                chartSection.innerHTML = `
+                    <div style="width: 100%; max-width: 400px;">
+                        <img src="${image}" alt="Analyzed Food"
+                             style="width: 100%; height: auto; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+                    </div>
+                    <div class="recommendation ${healthRatingClass}" style="margin-top: 20px;">
+                        ${healthIcon} ${foodData.recommendation || healthText}
+                    </div>
+                `;
+            }
+
+            // Add additional notes if available
+            if (foodData.additionalNotes) {
+                const notesSection = document.createElement('div');
+                notesSection.style.cssText = 'margin-top: 30px; padding: 20px; background: #f9f9f9; border-radius: 15px;';
+                notesSection.innerHTML = `
+                    <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 10px;">Additional Notes</h3>
+                    <p style="color: #666;">${foodData.additionalNotes}</p>
+                `;
+                document.querySelector('.analysis-container').appendChild(notesSection);
+            }
+        }
+
+        // Format raw description for better display
+        function formatRawDescription(rawText) {
+            if (!rawText) return '';
+
+            // If we successfully parsed JSON, show a clean summary instead of the raw text
+            // The raw text will still be available but formatted better
+            const lines = rawText.split('\n').filter(line => line.trim());
+
+            // Check if this looks like our new format (JSON + table)
+            const hasJson = rawText.includes('{') && rawText.includes('}');
+            const hasTable = rawText.includes('| Nutrient | Amount |');
+
+            if (hasJson && hasTable) {
+                // Extract everything after the JSON (the table and any additional text)
+                const jsonEndIndex = rawText.lastIndexOf('}');
+                if (jsonEndIndex !== -1) {
+                    const afterJson = rawText.substring(jsonEndIndex + 1).trim();
+                    if (afterJson) {
+                        return `<div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 15px; font-family: monospace; font-size: 14px; white-space: pre-wrap; border-left: 4px solid #6b8e4e;">${afterJson}</div>`;
+                    }
+                }
+            }
+
+            // Fallback: format as before
+            let formatted = '<div style="line-height: 1.6;">';
+
+            lines.forEach(line => {
+                const trimmed = line.trim();
+                if (!trimmed) return;
+
+                // Skip JSON blocks
+                if (trimmed.startsWith('{') && trimmed.includes('}')) {
+                    return;
+                }
+
+                // Format table rows
+                if (trimmed.includes('|') && (trimmed.includes('Nutrient') || trimmed.includes('Amount') || /^\|.*\|.*\|$/.test(trimmed))) {
+                    formatted += `<div style="font-family: monospace; background: #f8f9fa; padding: 8px; margin: 5px 0; border-radius: 4px;">${trimmed}</div>`;
+                }
+                // Format section headers (lines ending with colon)
+                else if (trimmed.endsWith(':') && trimmed.length < 50) {
+                    formatted += `<strong style="color: #2d3e1f; font-size: 16px; display: block; margin: 15px 0 5px 0;">${trimmed}</strong>`;
+                }
+                // Format bullet points
+                else if (trimmed.startsWith('-') || trimmed.startsWith('•')) {
+                    formatted += `<div style="margin: 5px 0; padding-left: 15px;">${trimmed}</div>`;
+                }
+                // Format numbered lists
+                else if (/^\d+\./.test(trimmed)) {
+                    formatted += `<div style="margin: 5px 0;">${trimmed}</div>`;
+                }
+                // Regular paragraphs
+                else {
+                    formatted += `<p style="margin: 8px 0;">${trimmed}</p>`;
+                }
+            });
+
+            formatted += '</div>';
+            return formatted;
+        }
+
+        // Format nutrition values
+        function formatNutrition(value) {
+            if (value === null || value === undefined || isNaN(value)) return '0';
+            return Number(value).toFixed(1);
+        }
+
+        // Navigation
+        document.querySelectorAll('.recent-card').forEach(card => {
+            card.addEventListener('click', function() {
+                const foodName = this.querySelector('.recent-food-name').textContent;
+                console.log('Viewing analysis for:', foodName);
+            });
+        });
+
+        // Search functionality
+        document.querySelector('.header-search input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                alert('Search feature - Implement your search logic here');
+            }
+        });
+
+        // Back to home
+        document.querySelector('.logo').addEventListener('click', function() {
+            window.location.href = '/';
+        });
+    </script>
+</body>
+</html>
