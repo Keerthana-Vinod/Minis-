@@ -1,6 +1,6 @@
 # Food Analysis App
 
-A modern web application for analyzing food nutritional content with instant visual feedback.
+A modern web application for analyzing food nutritional content with instant visual feedback. The Fast Api server will serve this at / endpoint 
 
 ## Features
 
@@ -16,8 +16,7 @@ A modern web application for analyzing food nutritional content with instant vis
 
 ```
 foodproject/
-├── index.html          # Home page with upload functionality
-├── detail.html         # Detailed analysis page with charts
+├── index.html          # Home page with upload functionality and Detailed analysis with charts
 ├── app.js             # Core JavaScript functionality
 ├── styles.css         # Shared styles and utilities
 └── README.md          # This file
@@ -209,5 +208,6 @@ For issues or questions:
   - Sample data integration
 
 ---
+
 
 Made with ❤️ for healthy eating
